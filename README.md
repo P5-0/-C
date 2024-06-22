@@ -107,7 +107,7 @@ The bot will automatically set your Discord status with the specified custom sta
 ## Keep Alive
 
 The script includes a keep_alive function to ensure the bot remains active. This is especially useful for hosting environments that might otherwise time out.
-## Use sites like `https://cron-job.org/` to make it work 24-7
+## Use sites like `https://cron-job.org/` or `https://uptimerobot.com/` to make it work 24-7
 ****
 
 ## Running Locally

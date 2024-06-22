@@ -6,7 +6,7 @@ app = Flask('')
 @app.route('/')
 def main():
     # This returns a minimal HTML page directly
-    return '<!doctype html><html><head><title>Lightweight Page</title></head><body><p>Hello, World!</p></body></html>'
+    return '<!doctype html><html><head><title>Lightweight Page</title></head><body><p>Alhamdu, lillah!</p></body></html>'
 
 def run():
     app.run(host="0.0.0.0", port=8080)

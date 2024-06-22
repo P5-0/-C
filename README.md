@@ -1,9 +1,9 @@
-![GitHub all releases](https://img.shields.io/github/downloads/P5-0/-C//total)
-![GitHub language count](https://img.shields.io/github/languages/count/P5-0/-C/)
-![GitHub top language](https://img.shields.io/github/languages/top/P5-0/-C/?color=yellow)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/P5-0/-C/)
-![GitHub forks](https://img.shields.io/github/forks/P5-0/-C/?style=social)
-![GitHub Repo stars](https://img.shields.io/github/stars/P5-0/-C/?style=social)
+![GitHub all releases](https://img.shields.io/github/downloads/P5-0/!C//total)
+![GitHub language count](https://img.shields.io/github/languages/count/P5-0/!C/)
+![GitHub top language](https://img.shields.io/github/languages/top/P5-0/!C/?color=yellow)
+![Bitbucket open issues](https://img.shields.io/bitbucket/issues/P5-0/!C/)
+![GitHub forks](https://img.shields.io/github/forks/P5-0/!C/?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/P5-0/!C/?style=social)
 ****
 
 # Updated version with the ability to use animated and static emojis

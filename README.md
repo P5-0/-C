@@ -1,4 +1,4 @@
-![GitHub all releases](tps://img.shields.io/github/downloads/P5-0/V/total)
+![GitHub all releases](https://img.shields.io/github/downloads/P5-0/V/total)
 ![GitHub language count](https://img.shields.io/github/languages/count/P5-0/V)
 ![GitHub top language](https://img.shields.io/github/languages/top/P5-0/V?color=yellow).
 ![Bitbucket open issues](https://img.shields.io/bitbucket/issues/P5-0/V)

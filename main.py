@@ -2,17 +2,19 @@ import os
 import sys
 import json
 import time
-import requests
-import websocket
 import logging
+import requests
+import asyncio
+import websockets
+from threading import Thread
 from keep_alive import keep_alive
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Fetch environment variables
-status = os.getenv("status", "online")  # default to 'online' if not set
-custom_status = os.getenv("custom_status", "")  # default to empty string if not set
+status = os.getenv("status", "online")
+custom_status = os.getenv("custom_status", "")
 emoji_name = os.getenv("emoji_name", "")
 emoji_id = os.getenv("emoji_id", "")
 emoji_animated = os.getenv("emoji_animated", "false").lower() == "true"
@@ -35,86 +37,75 @@ username = userinfo["username"]
 discriminator = userinfo["discriminator"]
 userid = userinfo["id"]
 
-def on_message(ws, message):
-    logging.debug(f"Received message: {message}")
-
-def on_error(ws, error):
-    logging.error(f"Encountered error: {error}")
-
-def on_close(ws, close_status_code, close_msg):
-    logging.info(f"Closed connection: {close_status_code} - {close_msg}")
-
-def on_open(ws):
-    logging.info("Opened connection")
-
-def onliner(token, status):
+async def onliner(token, status):
     try:
-        ws = websocket.WebSocketApp(
-            "wss://gateway.discord.gg/?v=9&encoding=json",
-            on_message=on_message,
-            on_error=on_error,
-            on_close=on_close
-        )
-        ws.on_open = on_open
-        
-        def run(*args):
-            start = json.loads(ws.recv())
-            heartbeat = start["d"]["heartbeat_interval"]
-            auth = {
-                "op": 2,
-                "d": {
-                    "token": token,
-                    "properties": {
-                        "$os": "Windows 10",
-                        "$browser": "Google Chrome",
-                        "$device": "Windows",
-                    },
-                    "presence": {"status": status, "afk": False},
-                },
-                "s": None,
-                "t": None,
-            }
-            ws.send(json.dumps(auth))
-
-            activities = {
-                "type": 4,
-                "state": custom_status,
-                "name": "Custom Status",
-                "id": "custom",
-            }
-            if emoji_name:
-                activities["emoji"] = {"name": emoji_name, "animated": emoji_animated}
-                if emoji_id:
-                    activities["emoji"]["id"] = emoji_id
+        async with websockets.connect("wss://gateway.discord.gg/?v=9&encoding=json") as ws:
+            logging.info("WebSocket connected")
             
-            cstatus = {
-                "op": 3,
-                "d": {
-                    "since": 0,
-                    "activities": [activities],
-                    "status": status,
-                    "afk": False,
-                },
-            }
-            
-            ws.send(json.dumps(cstatus))
-            online = {"op": 1, "d": "None"}
-            
-            while True:
-                time.sleep(heartbeat / 1000)
-                ws.send(json.dumps(online))
+            async for message in ws:
+                payload = json.loads(message)
+                if payload["op"] == 10:  # Hello
+                    interval = payload["d"]["heartbeat_interval"] / 1000
+                    
+                    async def heartbeat():
+                        while True:
+                            await ws.send(json.dumps({"op": 1, "d": None}))
+                            logging.debug("Heartbeat sent")
+                            await asyncio.sleep(interval)
+                    asyncio.create_task(heartbeat())
 
-        ws.run_forever()
-    
-    except websocket.WebSocketBadStatusException as e:
-        logging.error(f"WebSocket failed with status: {e.status_code} - {e}")
+                    auth = {
+                        "op": 2,
+                        "d": {
+                            "token": token,
+                            "properties": {
+                                "$os": "Windows 10",
+                                "$browser": "Google Chrome",
+                                "$device": "Windows",
+                            },
+                            "presence": {"status": status, "afk": False},
+                        },
+                        "s": None,
+                        "t": None,
+                    }
+                    await ws.send(json.dumps(auth))
+                    logging.info("Authentication sent")
 
-def run_onliner():
+                    activities = {
+                        "type": 4,
+                        "state": custom_status,
+                        "name": "Custom Status",
+                        "id": "custom",
+                    }
+                    if emoji_name:
+                        activities["emoji"] = {"name": emoji_name, "animated": emoji_animated}
+                        if emoji_id:
+                            activities["emoji"]["id"] = emoji_id
+                    
+                    cstatus = {
+                        "op": 3,
+                        "d": {
+                            "since": 0,
+                            "activities": [activities],
+                            "status": status,
+                            "afk": False,
+                        },
+                    }
+                    await ws.send(json.dumps(cstatus))
+                    logging.info("Custom status sent")
+
+    except Exception as e:
+        logging.error(f"Exception occurred: {e}")
+
+async def run_onliner():
     os.system("clear")
     logging.info(f"Logged in as {username}#{discriminator} ({userid}).")
     while True:
-        onliner(usertoken, status)
-        time.sleep(30)
+        await onliner(usertoken, status)
+        logging.info("Attempting to reconnect in 30 seconds")
+        await asyncio.sleep(30)
 
 keep_alive()
-run_onliner()
+
+# Run the event loop
+asyncio.run(run_onliner())

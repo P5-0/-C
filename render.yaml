@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: discord-bot
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "./start.sh"
+    plan: free
+    envVars:
+      - key: status
+        value: "online"
+      - key: custom_status
+        value: "Feeling like a king"
+      - key: emoji_name
+        value: "🪓"
+      - key: emoji_id
+        value: ""
+      - key: emoji_animated
+        value: "False"
+      - key: token
+        value: "YOUR_DISCORD_BOT_TOKEN"
